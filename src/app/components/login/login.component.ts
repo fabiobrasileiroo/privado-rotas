@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AutorizacaoService } from 'src/app/service/autorizacao.service';
 
 @Component({
   selector: 'app-login',
@@ -8,23 +9,19 @@ import { Component, OnInit } from '@angular/core';
 export class LoginComponent implements OnInit {
   loginAutorizado = false;
 
-  ngOnInit(): void {
-    this.obterLoginStatus();
-  }
-  obterLoginStatus() {
-    this.loginAutorizado = !!localStorage.getItem("login");
-  }
+  constructor(
+    private autorizarService: AutorizacaoService,
+  ) {}
+  ngOnInit(): void {}
 
   obterDescricaoLogin = () =>
-    this.loginAutorizado ?
-    "Estou Autorizado" : "Nao estou Autorizado";
+    this.autorizarService.obterLoginStatus()
+      ? 'Estou Autorizado'
+      : 'Nao estou Autorizado';
 
   loginClick() {
-    if (this.loginAutorizado)
-      localStorage.clear();
-    else
-      localStorage.setItem("login", "sim");
-
-    this.obterLoginStatus();
+    if (this.autorizarService.obterLoginStatus())
+      this.autorizarService.deslogar();
+    else this.autorizarService.autorizar();
   }
 }
